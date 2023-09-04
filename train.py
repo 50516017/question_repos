@@ -29,7 +29,7 @@ TARGET_MODULES = [
     "query_key_value"
 ]
 MODEL_NAME = "rinna/japanese-gpt-neox-3.6b-instruction-ppo"
-TRAIN_DATA_PATH = "./training_data2.jsonl" #さくさくむらさん形式のデータセット
+TRAIN_DATA_PATH = "./training_data.jsonl" #さくさくむらさん形式のデータセット
 device_map = "auto"
 world_size = int(os.environ.get('WORLD_SIZE', 1))
 ddp = world_size != 1
@@ -69,23 +69,22 @@ train_val = data_prof["train"].train_test_split(
 train_data = train_val["train"]
 val_data = train_val["test"]
 def generate_prompt(data_point):#データセット入力用プロンプトの生成 (ここをどのような形式にしているのでしょうか？)
-    
+        
     if False:
         result = f"""### 指示:
 {data_point["instruction"]}
 
-### 入力:
-{data_point["input"]}
+### 入力:  # speaker = メジロマックイーン以外？
+{data_point["dialogue"][0]["text"]}
 
-### 回答:
-{data_point["output"]}"""
+### 回答: # speaker = メジロマックイーン？
+{data_point["dialogue"][0]["text"]}"""
     else:
         result = f"""ユーザ: {data_point["instruction"]}
-システム: {data_point["output"]}"""
+システム: {data_point["dialogue"][0]["text"]}"""
 
     # 改行→<NL>
     result = result.replace('\n', '<NL>')
-    # ex) 
     return result
 
 
